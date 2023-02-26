@@ -1,4 +1,3 @@
-
 export interface IFile {
   fieldname: string;
   originalname: string;
@@ -8,11 +7,10 @@ export interface IFile {
   size: number;
 }
 
-export type callbackFunction = (error: unknown,data?: unknown) => unknown;
+export type callbackFunction = (error: unknown, data?: unknown) => unknown;
 
 export type fileHandlerFunction = (
   req: unknown,
   file: IFile,
   cb: callbackFunction
 ) => void;
-
