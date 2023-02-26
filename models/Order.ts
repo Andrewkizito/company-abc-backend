@@ -33,6 +33,10 @@ const OrderSchema = new Schema({
 		type: String,
 		required: true,
 	},
+	totalPrice: {
+		type: Number,
+		required: true,
+	},
 	cart: {
 		type: [OrderItemSchema],
 		required: true
@@ -42,7 +46,7 @@ const OrderSchema = new Schema({
 		enum: ['APPROVED','REJECTED','COMPLETED','PENDING'],
 		default: 'PENDING'
 	},
-	subscriptionArn: {
+	smsEndpoint: {
 		type: String,
 		required: true,
 	},
