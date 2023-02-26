@@ -19,17 +19,7 @@ dotenv.config();
 
 //Intialising express app
 const app = express();
- 
-const { SNS_KEY_ID,SNS_ACCESS_KEY_ID } = process.env;
 
-if(SNS_KEY_ID !== undefined && SNS_ACCESS_KEY_ID !== undefined){
-
-	AWS.config.credentials = {
-		accessKeyId: SNS_KEY_ID,
-		secretAccessKey: SNS_ACCESS_KEY_ID
-	};
-
-}
 
 //Setting up cors
 app.use(function (_, res: Response, next: NextFunction) {
