@@ -4,17 +4,17 @@ import { getProducts, saveProduct } from '../controllers/products';
 
 const shopRouter = Router();
 
-shopRouter.post('/', checkAuthState, saveProduct, (_, res: Response) => {
-	res.send('Product Created Successfully').status(200);
-});
-
-shopRouter.get(
+shopRouter.post(
 	'/',
 	checkAuthState,
-	getProducts,
+	saveProduct,
 	(req: Request, res: Response) => {
 		res.send(req.body).status(200);
 	}
 );
+
+shopRouter.get('/', getProducts, (req: Request, res: Response) => {
+	res.send(req.body).status(200);
+});
 
 export default shopRouter;
