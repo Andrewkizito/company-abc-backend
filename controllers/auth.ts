@@ -109,5 +109,6 @@ export async function checkAuthState(
 		}
 	} else {
 		req.body.isAuthenticated = false;
+		next();
 	}
 }
