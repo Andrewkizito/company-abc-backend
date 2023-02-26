@@ -1,3 +1,4 @@
+
 export interface IFile {
   fieldname: string;
   originalname: string;
@@ -14,3 +15,4 @@ export type fileHandlerFunction = (
   file: IFile,
   cb: callbackFunction
 ) => void;
+
