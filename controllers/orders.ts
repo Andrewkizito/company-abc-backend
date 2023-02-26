@@ -97,34 +97,52 @@ export function getOrders(req: Request, res: Response, next: NextFunction) {
 
 export function approveOrder(req: Request, res: Response, next: NextFunction) {
 	if (req.body.isAuthenticated) {
-		const { name, cart, totalPrice, phoneNumber }: ApproveOrderPayload =
+		// Extracting order details
+		const { _id, name, cart, totalPrice, phoneNumber }: ApproveOrderPayload =
       req.body;
+		// Validating order details
 		if (name && cart && totalPrice && phoneNumber) {
+			/* Getting matchinf copies of the 
+			   order items in cart from database */
 			Product.find({
 				productName: { $in: cart.map((item) => item.productName) },
 			}).then((products) => {
+				// Stock check variable
 				let stockCheck = true;
+				// List of missing stock
 				const missingSock: string[] = [];
+				// List of stock to update
 				const stockToUpdate: { productName: string; newStock: number }[] = [];
+
+				//Looping through the cart
 				cart.forEach((item) => {
+					// Getting the equivalent product for the current cart item
 					const product = products.filter(
 						(pdt) => pdt.productName === item.productName
 					)[0];
+					// Checking if stock left is enough to fullfil the order
 					if (product.stock < item.quantity) {
+						// Set stock check to false
 						stockCheck = false;
+						// Add stock to missing stock
 						missingSock.push(item.productName);
-					} else
+					}
+					// Add stock changes
+					else
 						stockToUpdate.push({
 							productName: item.productName,
 							newStock: product.stock - item.quantity,
 						});
 				});
+
+				// Checking if order can be fullfiled
 				if (stockCheck) {
+					// Updating all stock items
 					stockToUpdate.forEach((item) =>
 						Product.updateOne(
 							{ productName: item.productName },
 							{
-								$set: { stock: item.newStock,orderStatus: 'APPROVED' },
+								$set: { stock: item.newStock, orderStatus: 'APPROVED' },
 							}
 						)
 							.then(() =>
@@ -137,14 +155,27 @@ export function approveOrder(req: Request, res: Response, next: NextFunction) {
 								res.send(err.message);
 							})
 					);
-					const newPayload = {
-						destination: phoneNumber,
-						onSuccess: 'Order has been approved successfully',
-						message: generateOrderApprovalMessage(name, cart, totalPrice),
-					};
-					req.body = newPayload;
-					next();
+					// Updating order status
+					Order.findByIdAndUpdate(_id, {
+						$set: { orderStatus: 'APPROVED' },
+					})
+						.then(() => {
+							console.log('Order has been approved');
+							const newPayload = {
+								destination: phoneNumber,
+								onSuccess: 'Order has been approved successfully',
+								message: generateOrderApprovalMessage(name, cart, totalPrice),
+							};
+							req.body = newPayload;
+							next();
+						})
+						.catch((err) => {
+							// Sending out of stock message
+							res.statusCode = 403;
+							res.send(err.message);
+						});
 				} else {
+					// Sending out of stock message
 					res.statusCode = 403;
 					res.send(`Out of stock: ${missingSock.join(' ')}`);
 				}
