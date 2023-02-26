@@ -34,6 +34,7 @@ if(SNS_KEY_ID !== undefined && SNS_ACCESS_KEY_ID !== undefined){
 //Setting up cors
 app.use(function (_, res: Response, next: NextFunction) {
 	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH');
 	res.header(
 		'Access-Control-Allow-Headers',
 		'Origin, X-Requested-With, Content-Type, Accept, Authorization'
