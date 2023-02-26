@@ -20,6 +20,15 @@ type ApproveOrderPayload = {
   isAuthenticated?: boolean;
 };
 
+type RejectOrderPayload = {
+  _id: string;
+  name: string;
+  reason: string;
+  cart: CartItem[];
+  phoneNumber: string;
+  isAuthenticated?: boolean;
+};
+
 type OrderPayload = {
   location: string;
 } & ApproveOrderPayload;
@@ -37,6 +46,20 @@ function generateOrderApprovalMessage(
 	const tempelate = `Dear ${name}, your order for ${itemsPurchased.join(
 		', '
 	)} has been recieved and confirmed, and we shall contact you soon for delivery details, the total amount for this order is: ugx ${totalPrice}`;
+	return tempelate;
+}
+
+function generateOrderRejectionMessage(
+	name: string,
+	reason: string,
+	cart: CartItem[]
+): string {
+	const itemsPurchased: string[] = cart.map(
+		(item) => `${item.productName} (${item.quantity} ${item.unit})`
+	);
+	const tempelate = `Dear ${name}, thank you for placing in an order for ${itemsPurchased.join(
+		', '
+	)} Unforturnately, your order has been cancelled because ${reason}`;
 	return tempelate;
 }
 
@@ -155,7 +178,7 @@ export function approveOrder(req: Request, res: Response, next: NextFunction) {
 								res.send(err.message);
 							})
 					);
-					// Updating order status
+					// Updating order status to APPROVED
 					Order.findByIdAndUpdate(_id, {
 						$set: { orderStatus: 'APPROVED' },
 					})
@@ -170,7 +193,7 @@ export function approveOrder(req: Request, res: Response, next: NextFunction) {
 							next();
 						})
 						.catch((err) => {
-							// Sending out of stock message
+							// Sending error message
 							res.statusCode = 403;
 							res.send(err.message);
 						});
@@ -187,5 +210,34 @@ export function approveOrder(req: Request, res: Response, next: NextFunction) {
 	} else {
 		res.statusCode = 403;
 		res.send('Auth session is invalid');
+	}
+}
+
+export function rejectOrder(req: Request, res: Response, next: NextFunction) {
+	if (req.body.isAuthenticated) {
+		const { _id, name, reason, cart, phoneNumber }: RejectOrderPayload =
+      req.body;
+		// Updating order status to REJECTED
+		Order.findByIdAndUpdate(_id, {
+			$set: { orderStatus: 'REJECTED' },
+		})
+			.then(() => {
+				console.log('Order has been REJECTED');
+				const newPayload = {
+					destination: phoneNumber,
+					onSuccess: 'Order has been approved successfully',
+					message: generateOrderRejectionMessage(name, reason, cart),
+				};
+				req.body = newPayload;
+				next();
+			})
+			.catch((err) => {
+				// Sending out of stock message
+				res.statusCode = 403;
+				res.send(err.message);
+			});
+	} else {
+		res.statusCode = 403;
+		res.send('Name, Cart, Total price and sms endpoint are all required');
 	}
 }
