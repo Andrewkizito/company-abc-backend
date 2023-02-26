@@ -1,55 +1,26 @@
 import AWS from 'aws-sdk';
 import { Request, Response, NextFunction } from 'express';
 
-AWS.config.region = 'eu-central-1';
-
-const sms = new AWS.SNS({
-	apiVersion: '2010-03-31',
-	region: 'eu-central-1',
-});
-
-export function createSubscription(
-	req: Request,
-	res: Response,
-	next: NextFunction
-) {
-	const phoneNumber: string | undefined = req.body.phoneNumber;
-
-	const regex = /^\+256\d\d\d\d\d\d\d\d\d$/i;
-
-	if (phoneNumber !== undefined && regex.test(phoneNumber)) {
-		const sms = new AWS.SNS({
-			apiVersion: '2010-03-31',
-			region: 'eu-central-1',
-		});
-		sms.subscribe(
-			{
-				TopicArn: 'arn:aws:sns:eu-central-1:316190357269:Company-ABC',
-				Protocol: 'sms',
-				Endpoint: phoneNumber,
-				ReturnSubscriptionArn: true,
-			},
-			function (err, data) {
-				if (err) {
-					console.log(err);
-					res.statusCode = 403;
-					res.send(err.message);
-				}
-				req.body.smsEndpoint = data.SubscriptionArn;
-				next();
-			}
-		);
-	}
-}
-
 export function sendMessage(req: Request, res: Response, next: NextFunction) {
-	const destination: string | undefined = req.body.smsEndpoint;
+	AWS.config.update({
+		region: 'eu-central-1',
+		credentials: {
+			accessKeyId: 'AKIAUTHTJ64KYMZOMXOD',
+			secretAccessKey: '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',
+		},
+	});
+
+	const sms = new AWS.SNS({
+		apiVersion: '2010-03-31',
+		region: 'eu-central-1',
+	});
+	const destination: string | undefined = req.body.destination;
 	const message: string | undefined = req.body.message;
 	const onSuccess: string | undefined = req.body.message;
 	if (destination && message && onSuccess) {
 		sms.publish(
 			{
-				TargetArn: destination,
+				PhoneNumber: destination,
 				Message: message,
 			},
 			function (err, data) {
