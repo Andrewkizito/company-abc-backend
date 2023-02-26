@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response, NextFunction } from 'express';
 import Order from '../models/Order';
+import Product from '../models/Product';
 
 interface CartItem {
+  _id: string;
   productName: string;
   quantity: number;
   price: number;
@@ -10,15 +12,15 @@ interface CartItem {
 }
 
 type ApproveOrderPayload = {
+  _id: string;
   name: string;
   totalPrice: number;
   cart: CartItem[];
-  smsEndpoint: string;
-  isAuthenticated?: boolean
+  phoneNumber: string;
+  isAuthenticated?: boolean;
 };
 
 type OrderPayload = {
-  phoneNumber: string;
   location: string;
 } & ApproveOrderPayload;
 
@@ -30,35 +32,25 @@ function generateOrderApprovalMessage(
 	totalPrice: number
 ): string {
 	const itemsPurchased: string[] = cart.map(
-		(item) => `${item.productName} ${item.quantity} ${item.unit}`
+		(item) => `${item.productName} (${item.quantity} ${item.unit})`
 	);
-	const tempelate = `Dear ${name}, your order for (${itemsPurchased.join(
+	const tempelate = `Dear ${name}, your order for ${itemsPurchased.join(
 		', '
-	)}) has been recieved and confirmed, and we shall contact you soon for delivery details, the total amount for this order is: ugx - ${totalPrice}`;
+	)} has been recieved and confirmed, and we shall contact you soon for delivery details, the total amount for this order is: ugx ${totalPrice}`;
 	return tempelate;
 }
 
 export function placeOrder(req: Request, res: Response, next: NextFunction) {
 	// Extracting order information
-	const {
-		name,
-		phoneNumber,
-		location,
-		cart,
-		smsEndpoint,
-		totalPrice,
-	}: OrderPayload = req.body;
+	const { name, phoneNumber, location, cart, totalPrice }: OrderPayload =
+    req.body;
 
-	if (
-		(name && phoneNumber && location && cart && smsEndpoint && totalPrice) !==
-    undefined
-	) {
+	if (name && phoneNumber && location && cart && totalPrice) {
 		const newItem = new Order({
 			name,
 			phoneNumber,
 			location,
 			cart,
-			smsEndpoint,
 			totalPrice,
 		});
 		newItem
@@ -105,14 +97,58 @@ export function getOrders(req: Request, res: Response, next: NextFunction) {
 
 export function approveOrder(req: Request, res: Response, next: NextFunction) {
 	if (req.body.isAuthenticated) {
-		const { name, cart, totalPrice, smsEndpoint }: ApproveOrderPayload = req.body;
-		if (name && cart && totalPrice && smsEndpoint) {
-			const newPayload = {
-				destination: smsEndpoint,
-				message: generateOrderApprovalMessage(name, cart, totalPrice),
-			};
-			req.body = newPayload;
-			next();
+		const { name, cart, totalPrice, phoneNumber }: ApproveOrderPayload =
+      req.body;
+		if (name && cart && totalPrice && phoneNumber) {
+			Product.find({
+				productName: { $in: cart.map((item) => item.productName) },
+			}).then((products) => {
+				let stockCheck = true;
+				const missingSock: string[] = [];
+				const stockToUpdate: { productName: string; newStock: number }[] = [];
+				cart.forEach((item) => {
+					const product = products.filter(
+						(pdt) => pdt.productName === item.productName
+					)[0];
+					if (product.stock < item.quantity) {
+						stockCheck = false;
+						missingSock.push(item.productName);
+					} else
+						stockToUpdate.push({
+							productName: item.productName,
+							newStock: product.stock - item.quantity,
+						});
+				});
+				if (stockCheck) {
+					stockToUpdate.forEach((item) =>
+						Product.updateOne(
+							{ productName: item.productName },
+							{
+								$set: { stock: item.newStock,orderStatus: 'APPROVED' },
+							}
+						)
+							.then(() =>
+								console.log(
+									`Updated ${item.productName} stock to ${item.newStock}`
+								)
+							)
+							.catch((err) => {
+								res.statusCode = 403;
+								res.send(err.message);
+							})
+					);
+					const newPayload = {
+						destination: phoneNumber,
+						onSuccess: 'Order has been approved successfully',
+						message: generateOrderApprovalMessage(name, cart, totalPrice),
+					};
+					req.body = newPayload;
+					next();
+				} else {
+					res.statusCode = 403;
+					res.send(`Out of stock: ${missingSock.join(' ')}`);
+				}
+			});
 		} else {
 			res.statusCode = 403;
 			res.send('Name, Cart, Total price and sms endpoint are all required');
