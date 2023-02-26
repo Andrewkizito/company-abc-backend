@@ -53,7 +53,10 @@ export async function saveProduct(
 
 					newProduct
 						.save()
-						.then(() => next())
+						.then(() => {
+							req.body = 'Product Added Successfully';
+							next();
+						})
 						.catch((err: any) => {
 							res.statusCode = 404;
 							res.send(err.message);
@@ -74,9 +77,7 @@ export async function saveProduct(
 }
 
 export function getProducts(req: Request, res: Response, next: NextFunction) {
-	ProductModel.find({
-		stock: req.body.isAuthenticated ? { $gt: -1 } : { $gt: 0 },
-	})
+	ProductModel.find()
 		.then((items) => {
 			req.body = items;
 			next();
