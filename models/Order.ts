@@ -46,10 +46,6 @@ const OrderSchema = new Schema({
 		enum: ['APPROVED','REJECTED','COMPLETED','PENDING'],
 		default: 'PENDING'
 	},
-	smsEndpoint: {
-		type: String,
-		required: true,
-	},
 });
 
 export default model('orders', OrderSchema);
