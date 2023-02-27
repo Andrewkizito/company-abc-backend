@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
-import ProductModel from "../models/Product";
+import Product from "../models/Product";
 
 interface ProductPayload {
   productName: string;
@@ -34,14 +34,14 @@ export async function saveProduct(
 		}
 		if (Object.values(mydata).length) {
 			try {
-				const item = await ProductModel.find({
+				const item = await Product.find({
 					productName: mydata.productName,
 				});
 				if (item.length) {
 					res.statusCode = 403;
 					res.send("Item Already Exists");
 				} else {
-					const newProduct = new ProductModel({
+					const newProduct = new Product({
 						productName: mydata.productName,
 						description: mydata.description,
 						image: mydata.image,
@@ -77,7 +77,7 @@ export async function saveProduct(
 }
 
 export function getProducts(req: Request, res: Response, next: NextFunction) {
-	ProductModel.find()
+	Product.find()
 		.then((items) => {
 			req.body = items;
 			next();
@@ -86,4 +86,30 @@ export function getProducts(req: Request, res: Response, next: NextFunction) {
 			res.statusCode = 403;
 			res.send(err.message);
 		});
+}
+
+export function updateStock(req: Request, res: Response, next: NextFunction) {
+	if (req.body.isAuthenticated) {
+		const { _id, newStock } = req.body;
+		if (_id && newStock) {
+			// Updating order status to COMPLETED
+			Product.findByIdAndUpdate(_id, {
+				$set: { stock: newStock },
+			})
+				.then(() => {
+					req.body = "Stock has been successfully updated";
+					next();
+				})
+				.catch((err) => {
+					res.statusCode = 403;
+					res.send(err.message);
+				});
+		} else {
+			res.statusCode = 403;
+			res.send("Both Product id and stock value is required");
+		}
+	} else {
+		res.statusCode = 403;
+		res.send("Auth credentials invalid");
+	}
 }
