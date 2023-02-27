@@ -2,11 +2,13 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "Backed for this full-stack web application",
-  "main": "server.ts",
+  "main": "build/server.js",
   "scripts": {
+    "build": "tsc",
     "dev": "nodemon server",
-    "start": "nodemon server",
-    "test": "jest --runInBand --detectOpenHandles --forceExit"
+    "start": "node build/server.js",
+    "test": "jest --runInBand --detectOpenHandles --forceExit",
+    "eslint": "eslint --ext .ts --fix .eslintrc.js"
   },
   "author": "",
   "license": "ISC",
