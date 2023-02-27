@@ -1,5 +1,11 @@
 import { Request, Response, Router } from 'express';
-import { approveOrder, getOrders, placeOrder, rejectOrder } from '../controllers/orders';
+import {
+	approveOrder,
+	completeOrder,
+	getOrders,
+	placeOrder,
+	rejectOrder,
+} from '../controllers/orders';
 import { checkAuthState } from '../controllers/auth';
 import { sendMessage } from '../controllers/messaging';
 
@@ -38,5 +44,13 @@ ordersRouter.patch(
 	}
 );
 
+ordersRouter.patch(
+	'/complete',
+	checkAuthState,
+	completeOrder,
+	(req: Request, res: Response) => {
+		res.send(req.body).status(200);
+	}
+);
 
 export default ordersRouter;

@@ -240,3 +240,30 @@ export function rejectOrder(req: Request, res: Response, next: NextFunction) {
 		res.send('Name, Cart, Total price and sms endpoint are all required');
 	}
 }
+
+export function completeOrder(req: Request, res: Response, next: NextFunction) {
+	if (req.body.isAuthenticated) {
+		const { _id } = req.body;
+		if (_id) {
+			// Updating order status to COMPLETED
+			Order.findByIdAndUpdate(_id, {
+				$set: { orderStatus: 'COMPLETED' },
+			})
+				.then(() => {
+					req.body = 'Order has been successfully completed';
+					next();
+				})
+				.catch((err) => {
+					// Sending out of stock message
+					res.statusCode = 403;
+					res.send(err.message);
+				});
+		} else {
+			res.statusCode = 403;
+			res.send('Order id is required');
+		}
+	} else {
+		res.statusCode = 403;
+		res.send('Name, Cart, Total price and sms endpoint are all required');
+	}
+}
