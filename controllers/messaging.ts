@@ -16,7 +16,7 @@ export function sendMessage(req: Request, res: Response, next: NextFunction) {
 	});
 	const destination: string | undefined = req.body.destination;
 	const message: string | undefined = req.body.message;
-	const onSuccess: string | undefined = req.body.message;
+	const onSuccess: string | undefined = req.body.onSuccess;
 	if (destination && message && onSuccess) {
 		sms.publish(
 			{
