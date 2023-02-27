@@ -1,6 +1,5 @@
 //Importing core modules
 import path from 'path';
-import AWS from 'aws-sdk';
 import dotenv from 'dotenv';
 import express, { NextFunction, Response } from 'express';
 import mongoose from 'mongoose';
