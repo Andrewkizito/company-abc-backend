@@ -1,17 +1,17 @@
 //Importing core modules
-import path from 'path';
-import dotenv from 'dotenv';
-import express, { NextFunction, Response } from 'express';
-import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
-import multer from 'multer';
-import logger from 'morgan';
+import path from "path";
+import dotenv from "dotenv";
+import express, { NextFunction, Response } from "express";
+import mongoose from "mongoose";
+import bodyParser from "body-parser";
+import multer from "multer";
+import logger from "morgan";
 
 //Importing routers
-import authRouter from './routers/authRouter';
-import shopRouter from './routers/shopRouter';
-import { fileHandlerFunction,IFile } from './utils';
-import ordersRouter from './routers/ordersRouter';
+import authRouter from "./routers/authRouter";
+import shopRouter from "./routers/shopRouter";
+import { fileHandlerFunction, IFile } from "./utils";
+import ordersRouter from "./routers/ordersRouter";
 
 //Loading env file
 dotenv.config();
@@ -19,27 +19,26 @@ dotenv.config();
 //Intialising express app
 export const app = express();
 
-
 //Setting up cors
 app.use(function (_, res: Response, next: NextFunction) {
-	res.header('Access-Control-Allow-Origin', '*');
-	res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
 	res.header(
-		'Access-Control-Allow-Headers',
-		'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+		"Access-Control-Allow-Headers",
+		"Origin, X-Requested-With, Content-Type, Accept, Authorization"
 	);
 	next();
 });
 
 //Setting up file-storage
 const fileStorage = multer.diskStorage({
-	destination: (req , file: IFile, cb): void => cb(null, 'public/images'),
+	destination: (req, file: IFile, cb): void => cb(null, "public/images"),
 	filename: (req, file: IFile, cb): void => cb(null, `${file.originalname}`),
 });
 
 //Setting up files-filter
-const fileFilter: fileHandlerFunction = (req , file: IFile, cb ): void => {
-	const validMimeTypes = ['image/jpg', 'image/png', 'image/jpeg', 'image/webp'];
+const fileFilter: fileHandlerFunction = (req, file: IFile, cb): void => {
+	const validMimeTypes = ["image/jpg", "image/png", "image/jpeg", "image/webp"];
 	if (validMimeTypes.includes(file.mimetype)) {
 		cb(null, true);
 	} else {
@@ -65,7 +64,7 @@ const startServer = () => {
 			//File upload middleware
 			app.use(
 				multer({ storage: fileStorage, fileFilter: fileFilter }).single(
-					'uploadFile'
+					"uploadFile"
 				)
 			);
 			//Setting up logger middleware
@@ -75,21 +74,21 @@ const startServer = () => {
 						tokens.method(req, res),
 						tokens.url(req, res),
 						tokens.status(req, res),
-						tokens.res(req, res, 'content-length'),
-						'-',
-						tokens['response-time'](req, res),
-						'ms',
-					].join(' ');
+						tokens.res(req, res, "content-length"),
+						"-",
+						tokens["response-time"](req, res),
+						"ms",
+					].join(" ");
 				})
 			);
 
 			//Setting folder for static assets
-			app.use(express.static(path.join(__dirname, 'public')));
+			app.use(express.static(path.join(__dirname, "public")));
 
 			//Setting Up Routes
-			app.use('/auth', authRouter);
-			app.use('/products', shopRouter);
-			app.use('/orders', ordersRouter);
+			app.use("/auth", authRouter);
+			app.use("/products", shopRouter);
+			app.use("/orders", ordersRouter);
 
 			//Starting the server
 			app.listen(process.env.PORT, () => {

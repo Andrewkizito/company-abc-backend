@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
     /* Language and Environment */
-    "target": "es2016",
+    "target": "ES2015",
     /* Modules */
     "module": "commonjs",
     /* JavaScript Support */
     "allowJs": true,
-    "outDir": "./dist",
+    "outDir": "./build",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     /* Type Checking */

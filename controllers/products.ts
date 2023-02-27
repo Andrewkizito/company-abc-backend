@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextFunction, Request, Response } from 'express';
-import ProductModel from '../models/Product';
+import { NextFunction, Request, Response } from "express";
+import ProductModel from "../models/Product";
 
 interface ProductPayload {
   productName: string;
@@ -23,12 +23,12 @@ export async function saveProduct(
 		//Initializing product data
 		const mydata: { [key: string]: any } = {};
 		//Generating product data
-		const shouldBeNumbers: Array<string> = ['rating', 'price', 'stock'];
+		const shouldBeNumbers: Array<string> = ["rating", "price", "stock"];
 		for (const key in payload) {
-			if (key !== 'isAuthenticated') {
+			if (key !== "isAuthenticated") {
 				const value: any = payload[key as keyof typeof payload];
 				if (shouldBeNumbers.includes(key))
-					mydata[key] = typeof value === 'string' ? parseInt(value) : 1;
+					mydata[key] = typeof value === "string" ? parseInt(value) : 1;
 				else mydata[key] = value;
 			}
 		}
@@ -39,7 +39,7 @@ export async function saveProduct(
 				});
 				if (item.length) {
 					res.statusCode = 403;
-					res.send('Item Already Exists');
+					res.send("Item Already Exists");
 				} else {
 					const newProduct = new ProductModel({
 						productName: mydata.productName,
@@ -54,7 +54,7 @@ export async function saveProduct(
 					newProduct
 						.save()
 						.then(() => {
-							req.body = 'Product Added Successfully';
+							req.body = "Product Added Successfully";
 							next();
 						})
 						.catch((err: any) => {
@@ -68,11 +68,11 @@ export async function saveProduct(
 			}
 		} else {
 			res.statusCode = 403;
-			res.send('Some required fields are missing');
+			res.send("Some required fields are missing");
 		}
 	} else {
 		res.statusCode = 403;
-		res.send('Your credentials have expired');
+		res.send("Your credentials have expired");
 	}
 }
 

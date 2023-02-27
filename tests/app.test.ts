@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
-import request from 'supertest';
-import jwt from 'jsonwebtoken';
+import mongoose from "mongoose";
+import request from "supertest";
+import jwt from "jsonwebtoken";
 // import path from 'path';
-import { app } from '../server';
+import { app } from "../server";
 
-describe('Products endpoint', () => {
+describe("Products endpoint", () => {
 	/* Connecting to the database before each test. And generating authtoken*/
 	// let authToken: string;
 	beforeEach(async () => {
@@ -26,8 +26,8 @@ describe('Products endpoint', () => {
 	});
 
 	// Getting products should return an array
-	it('GET /products - should return all products', async () => {
-		const res = await request(app).get('/products');
+	it("GET /products - should return all products", async () => {
+		const res = await request(app).get("/products");
 		expect(res.statusCode).toBe(200);
 		expect(res.body.length).toBeDefined();
 	});
@@ -50,7 +50,7 @@ describe('Products endpoint', () => {
 	// });
 });
 
-describe('Orders endpoint', () => {
+describe("Orders endpoint", () => {
 	/* Connecting to the database before each test. And generating authtoken*/
 	let authToken: string;
 	beforeEach(async () => {
@@ -59,10 +59,10 @@ describe('Orders endpoint', () => {
 		);
 		authToken = jwt.sign(
 			{
-				data: 'admin',
+				data: "admin",
 			},
-			'company-abc-gf3bbf838',
-			{ expiresIn: '1h' }
+			"company-abc-gf3bbf838",
+			{ expiresIn: "1h" }
 		);
 	});
 
@@ -72,10 +72,10 @@ describe('Orders endpoint', () => {
 	});
 
 	// Getting orders should return an array
-	it('GET /orders - should return all orders', async () => {
+	it("GET /orders - should return all orders", async () => {
 		const res = await request(app)
-			.get('/orders')
-			.set('Authorization', authToken);
+			.get("/orders")
+			.set("Authorization", authToken);
 		expect(res.statusCode).toBe(200);
 		expect(res.body.total).toBeDefined();
 	});

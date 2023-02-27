@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import { model, Schema } from "mongoose";
 
 const AuthSchema = new Schema({
 	username: {
@@ -11,4 +11,4 @@ const AuthSchema = new Schema({
 	},
 });
 
-export default model('auth', AuthSchema);
+export default model("auth", AuthSchema);

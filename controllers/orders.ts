@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response, NextFunction } from 'express';
-import Order from '../models/Order';
-import Product from '../models/Product';
+import { Request, Response, NextFunction } from "express";
+import Order from "../models/Order";
+import Product from "../models/Product";
 
 interface CartItem {
   _id: string;
@@ -33,7 +33,7 @@ type OrderPayload = {
   location: string;
 } & ApproveOrderPayload;
 
-type OrderStatus = 'APPROVED' | 'REJECTED' | 'COMPLETED' | 'PENDING';
+type OrderStatus = "APPROVED" | "REJECTED" | "COMPLETED" | "PENDING";
 
 function generateOrderApprovalMessage(
 	name: string,
@@ -44,7 +44,7 @@ function generateOrderApprovalMessage(
 		(item) => `${item.productName} (${item.quantity} ${item.unit})`
 	);
 	const tempelate = `Dear ${name}, your order for ${itemsPurchased.join(
-		', '
+		", "
 	)} has been recieved and confirmed, and we shall contact you soon for delivery details, the total amount for this order is: ugx ${totalPrice}`;
 	return tempelate;
 }
@@ -58,7 +58,7 @@ function generateOrderRejectionMessage(
 		(item) => `${item.productName} (${item.quantity} ${item.unit})`
 	);
 	const tempelate = `Dear ${name}, thank you for placing in an order for ${itemsPurchased.join(
-		', '
+		", "
 	)} Unforturnately, your order has been cancelled because ${reason}`;
 	return tempelate;
 }
@@ -79,7 +79,7 @@ export function placeOrder(req: Request, res: Response, next: NextFunction) {
 		newItem
 			.save()
 			.then(() => {
-				req.body = 'Order Placed Successfully';
+				req.body = "Order Placed Successfully";
 				next();
 			})
 			.catch((err) => {
@@ -88,7 +88,7 @@ export function placeOrder(req: Request, res: Response, next: NextFunction) {
 			});
 	} else {
 		res.statusCode = 403;
-		res.send('Payload is invalid');
+		res.send("Payload is invalid");
 	}
 }
 
@@ -97,10 +97,10 @@ export function getOrders(req: Request, res: Response, next: NextFunction) {
 		Order.find()
 			.then((items) => {
 				const orderStatuses: OrderStatus[] = [
-					'APPROVED',
-					'REJECTED',
-					'COMPLETED',
-					'PENDING',
+					"APPROVED",
+					"REJECTED",
+					"COMPLETED",
+					"PENDING",
 				];
 				const payload: { [key: string]: any } = { total: items.length };
 				orderStatuses.forEach((item: OrderStatus) => {
@@ -117,7 +117,7 @@ export function getOrders(req: Request, res: Response, next: NextFunction) {
 			});
 	} else {
 		res.statusCode = 403;
-		res.send('Auth session is invalid');
+		res.send("Auth session is invalid");
 	}
 }
 
@@ -168,7 +168,7 @@ export function approveOrder(req: Request, res: Response, next: NextFunction) {
 						Product.updateOne(
 							{ productName: item.productName },
 							{
-								$set: { stock: item.newStock, orderStatus: 'APPROVED' },
+								$set: { stock: item.newStock, orderStatus: "APPROVED" },
 							}
 						)
 							.then(() =>
@@ -183,13 +183,13 @@ export function approveOrder(req: Request, res: Response, next: NextFunction) {
 					);
 					// Updating order status to APPROVED
 					Order.findByIdAndUpdate(_id, {
-						$set: { orderStatus: 'APPROVED' },
+						$set: { orderStatus: "APPROVED" },
 					})
 						.then(() => {
-							console.log('Order has been approved');
+							console.log("Order has been approved");
 							const newPayload = {
 								destination: phoneNumber,
-								onSuccess: 'Order has been approved successfully',
+								onSuccess: "Order has been approved successfully",
 								message: generateOrderApprovalMessage(name, cart, totalPrice),
 							};
 							req.body = newPayload;
@@ -203,16 +203,16 @@ export function approveOrder(req: Request, res: Response, next: NextFunction) {
 				} else {
 					// Sending out of stock message
 					res.statusCode = 403;
-					res.send(`Out of stock: ${missingSock.join(' ')}`);
+					res.send(`Out of stock: ${missingSock.join(" ")}`);
 				}
 			});
 		} else {
 			res.statusCode = 403;
-			res.send('Payload is invalid');
+			res.send("Payload is invalid");
 		}
 	} else {
 		res.statusCode = 403;
-		res.send('Auth session is invalid');
+		res.send("Auth session is invalid");
 	}
 }
 
@@ -224,12 +224,12 @@ export function rejectOrder(req: Request, res: Response, next: NextFunction) {
 		if (_id && name && reason && cart && phoneNumber) {
 			// Updating order status to REJECTED
 			Order.findByIdAndUpdate(_id, {
-				$set: { orderStatus: 'REJECTED' },
+				$set: { orderStatus: "REJECTED" },
 			})
 				.then(() => {
 					const newPayload = {
 						destination: phoneNumber,
-						onSuccess: 'Order has been rejected successfully',
+						onSuccess: "Order has been rejected successfully",
 						message: generateOrderRejectionMessage(name, reason, cart),
 					};
 					req.body = newPayload;
@@ -242,11 +242,11 @@ export function rejectOrder(req: Request, res: Response, next: NextFunction) {
 				});
 		} else {
 			res.statusCode = 403;
-			res.send('Payload is invalid');
+			res.send("Payload is invalid");
 		}
 	} else {
 		res.statusCode = 403;
-		res.send('Auth credentials invalid');
+		res.send("Auth credentials invalid");
 	}
 }
 
@@ -256,10 +256,10 @@ export function completeOrder(req: Request, res: Response, next: NextFunction) {
 		if (_id) {
 			// Updating order status to COMPLETED
 			Order.findByIdAndUpdate(_id, {
-				$set: { orderStatus: 'COMPLETED' },
+				$set: { orderStatus: "COMPLETED" },
 			})
 				.then(() => {
-					req.body = 'Order has been successfully completed';
+					req.body = "Order has been successfully completed";
 					next();
 				})
 				.catch((err) => {
@@ -268,11 +268,11 @@ export function completeOrder(req: Request, res: Response, next: NextFunction) {
 				});
 		} else {
 			res.statusCode = 403;
-			res.send('Order id is required');
+			res.send("Order id is required");
 		}
 	} else {
 		res.statusCode = 403;
-		res.send('Auth credentials invalid');
+		res.send("Auth credentials invalid");
 	}
 }
 
@@ -284,11 +284,11 @@ export function deleteOrder(req: Request, res: Response, next: NextFunction) {
 			Order.findById(_id)
 				.then((item) => {
 					if (item) {
-						if (['REJECTED', 'COMPLETED'].includes(item?.orderStatus)) {
+						if (["REJECTED", "COMPLETED"].includes(item?.orderStatus)) {
 							// Deleting the order
 							Order.deleteOne()
 								.then(() => {
-									req.body = 'Order has been successfully deleted';
+									req.body = "Order has been successfully deleted";
 									next();
 								})
 								.catch((err) => {
@@ -298,11 +298,11 @@ export function deleteOrder(req: Request, res: Response, next: NextFunction) {
 								});
 						} else {
 							res.statusCode = 403;
-							res.send('Order must be is either rejected or completed status');
+							res.send("Order must be is either rejected or completed status");
 						}
 					} else {
 						res.statusCode = 404;
-						res.send('Order not found, check id and try again');
+						res.send("Order not found, check id and try again");
 					}
 				})
 				.catch((err) => {
@@ -311,10 +311,10 @@ export function deleteOrder(req: Request, res: Response, next: NextFunction) {
 				});
 		} else {
 			res.statusCode = 403;
-			res.send('Order id is required');
+			res.send("Order id is required");
 		}
 	} else {
 		res.statusCode = 403;
-		res.send('Auth credentials invalid');
+		res.send("Auth credentials invalid");
 	}
 }

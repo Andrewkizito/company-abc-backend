@@ -1,18 +1,18 @@
-import AWS from 'aws-sdk';
-import { Request, Response, NextFunction } from 'express';
+import AWS from "aws-sdk";
+import { Request, Response, NextFunction } from "express";
 
 export function sendMessage(req: Request, res: Response, next: NextFunction) {
 	AWS.config.update({
-		region: 'eu-central-1',
+		region: "eu-central-1",
 		credentials: {
-			accessKeyId: 'AKIAUTHTJ64KYMZOMXOD',
-			secretAccessKey: '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',
+			accessKeyId: "AKIAUTHTJ64KYMZOMXOD",
+			secretAccessKey: "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",
 		},
 	});
 
 	const sms = new AWS.SNS({
-		apiVersion: '2010-03-31',
-		region: 'eu-central-1',
+		apiVersion: "2010-03-31",
+		region: "eu-central-1",
 	});
 	const destination: string | undefined = req.body.destination;
 	const message: string | undefined = req.body.message;
@@ -36,6 +36,6 @@ export function sendMessage(req: Request, res: Response, next: NextFunction) {
 		);
 	} else {
 		res.statusCode = 403;
-		res.send('Destination & Message are required');
+		res.send("Destination & Message are required");
 	}
 }

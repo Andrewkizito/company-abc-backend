@@ -1,4 +1,4 @@
-import { Request, Response, Router } from 'express';
+import { Request, Response, Router } from "express";
 import {
 	approveOrder,
 	completeOrder,
@@ -6,20 +6,20 @@ import {
 	getOrders,
 	placeOrder,
 	rejectOrder,
-} from '../controllers/orders';
-import { checkAuthState } from '../controllers/auth';
-import { sendMessage } from '../controllers/messaging';
+} from "../controllers/orders";
+import { checkAuthState } from "../controllers/auth";
+import { sendMessage } from "../controllers/messaging";
 
 const ordersRouter = Router();
 
 // Create new order
-ordersRouter.post('/', placeOrder, (req: Request, res: Response) => {
+ordersRouter.post("/", placeOrder, (req: Request, res: Response) => {
 	res.send(req.body).status(200);
 });
 
 // Get all orders
 ordersRouter.get(
-	'/',
+	"/",
 	checkAuthState,
 	getOrders,
 	(req: Request, res: Response) => {
@@ -29,7 +29,7 @@ ordersRouter.get(
 
 // Delete an order
 ordersRouter.delete(
-	'/',
+	"/",
 	checkAuthState,
 	deleteOrder,
 	(req: Request, res: Response) => {
@@ -39,7 +39,7 @@ ordersRouter.delete(
 
 // Approve an order
 ordersRouter.patch(
-	'/approve',
+	"/approve",
 	checkAuthState,
 	approveOrder,
 	sendMessage,
@@ -50,7 +50,7 @@ ordersRouter.patch(
 
 // Reject an order
 ordersRouter.patch(
-	'/reject',
+	"/reject",
 	checkAuthState,
 	rejectOrder,
 	sendMessage,
@@ -61,7 +61,7 @@ ordersRouter.patch(
 
 // Complete order
 ordersRouter.patch(
-	'/complete',
+	"/complete",
 	checkAuthState,
 	completeOrder,
 	(req: Request, res: Response) => {

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Response, Request, NextFunction } from 'express';
-import AuthModel from '../models/Auth';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import { Response, Request, NextFunction } from "express";
+import AuthModel from "../models/Auth";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 type User = {
   username: string;
@@ -23,7 +23,7 @@ export async function register(
 			});
 			if (item.length) {
 				res.statusCode = 403;
-				res.send('User Already Exists.');
+				res.send("User Already Exists.");
 			} else {
 				const salt = bcrypt.genSaltSync(10);
 				const hashedPassword = bcrypt.hashSync(payload.password, salt);
@@ -47,7 +47,7 @@ export async function register(
 		}
 	} else {
 		res.statusCode = 403;
-		res.send('Both email and password are required.');
+		res.send("Both email and password are required.");
 	}
 }
 
@@ -69,21 +69,21 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 						data: payload.username,
 					},
 					process.env.APP_SECRET,
-					{ expiresIn: '2h' }
+					{ expiresIn: "2h" }
 				);
 				req.body = token;
 				next();
 			} else {
 				res.statusCode = 404;
-				res.send('Password is invalid');
+				res.send("Password is invalid");
 			}
 		} else {
 			res.statusCode = 404;
-			res.send('No account found, check username and try again.');
+			res.send("No account found, check username and try again.");
 		}
 	} else {
 		res.statusCode = 403;
-		res.send('Both email and password are required.');
+		res.send("Both email and password are required.");
 	}
 }
 
@@ -92,7 +92,7 @@ export async function checkAuthState(
 	res: Response,
 	next: NextFunction
 ) {
-	const token: string | undefined = req.header('Authorization');
+	const token: string | undefined = req.header("Authorization");
 	if (token) {
 		if (process.env.APP_SECRET) {
 			jwt.verify(token, process.env.APP_SECRET, (error) => {
@@ -105,7 +105,7 @@ export async function checkAuthState(
 				}
 			});
 		} else {
-			next('App secret not found');
+			next("App secret not found");
 		}
 	} else {
 		req.body.isAuthenticated = false;

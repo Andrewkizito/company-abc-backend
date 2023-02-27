@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import { model, Schema } from "mongoose";
 
 const OrderItemSchema = new Schema({
 	productName: {
@@ -43,9 +43,9 @@ const OrderSchema = new Schema({
 	},
 	orderStatus: {
 		type: String,
-		enum: ['APPROVED','REJECTED','COMPLETED','PENDING'],
-		default: 'PENDING'
+		enum: ["APPROVED","REJECTED","COMPLETED","PENDING"],
+		default: "PENDING"
 	},
 });
 
-export default model('orders', OrderSchema);
+export default model("orders", OrderSchema);
