@@ -44,12 +44,14 @@ API Endpoints
 This API application exposes the following endpoints:
 
 ### Api Endpoints
+
+### Products
 `/products`: This handles all the requests that involve creation, and updating of products that in mongodb database.
 
 #### Methods
-*GET* - This will return a list of all procts in the database
+*Get* - This will return a list of all procts in the database
 
-*POST* - This will create A new product by passing in a payload inform of formData with the following fields accompanied with an Authorization header with the auth token.
+*Post* - This will create A new product by passing in a payload inform of formData with the following fields accompanied with an Authorization header with the auth token.
 - productName: The name of the product
 - description: Short sumamry about product
 - image: Name of the image file to be used
@@ -58,20 +60,24 @@ This API application exposes the following endpoints:
 - stock: Total amount in stock
 - unit: Units used to measure the product
 
-*PATCH* - This will update the product by passing in a payload inform of json with the following fields `_id: string, newStock: number` accompanied with an Authorization header with the auth token.
+*Patch* - This will update the product by passing in a payload inform of json with the following fields `_id: string, newStock: number` accompanied with an Authorization header with the auth token.
+
+### Orders
 
 `/orders`: Handlers all order related actions such as placing an order, deleting an order, approving and order and also rejecting an order
 
 #### Methods
 *GET /orders*: Gets all orders from the database.
-*POST /orders*: Added a new order to the database.
-*PATCH /orders/reject*: Changes the order status to REJECTED given an id of the order
-*PATCH /orders/approve*: Approves an order given an id of the order and changes its status to APPROVED
-*PATCH /orders/approve*: Takes an id of the order and changes its status to COMPLETED
+*Post /orders*: Added a new order to the database.
+*Patch /orders/reject*: Changes the order status to REJECTED given an id of the order
+*Patch /orders/approve*: Approves an order given an id of the order and changes its status to APPROVED
+*Patch /orders/approve*: Takes an id of the order and changes its status to COMPLETED
+
+### Auth
 
 `/auth`: Handles authentication which includes login, registration and token validation.
 
 #### Methods
-*POST /auth/register* - This will create a new user by passing in a payload inform of json with `username and password`.
-*POST /auth/login* - This will generate an auth token for a user by passing in a payload inform of json with `username and password`
+*Post /auth/register* - This will create a new user by passing in a payload inform of json with `username and password`.
+*Post /auth/login* - This will generate an auth token for a user by passing in a payload inform of json with `username and password`
 *GET /auth/status* - This will validate an auth token which is found in the `Authoriozation header`
