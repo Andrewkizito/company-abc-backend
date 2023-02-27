@@ -17,6 +17,7 @@ Start the development server using npm run dev
 Open the web application (https://github.com/Andrewkizito/company-abc-frontend)
 
 ### Available scripts
+
 #### `npm install`
 
 Installs all the projects dependencies.
