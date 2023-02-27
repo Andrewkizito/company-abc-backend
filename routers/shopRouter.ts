@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { checkAuthState } from "../controllers/auth";
-import { getProducts, saveProduct } from "../controllers/products";
+import { getProducts, saveProduct, updateStock } from "../controllers/products";
 
 const shopRouter = Router();
 
@@ -16,5 +16,14 @@ shopRouter.post(
 shopRouter.get("/", getProducts, (req: Request, res: Response) => {
 	res.send(req.body).status(200);
 });
+
+shopRouter.patch(
+	"/",
+	checkAuthState,
+	updateStock,
+	(req: Request, res: Response) => {
+		res.send(req.body).status(200);
+	}
+);
 
 export default shopRouter;
