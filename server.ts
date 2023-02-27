@@ -17,7 +17,7 @@ import ordersRouter from './routers/ordersRouter';
 dotenv.config();
 
 //Intialising express app
-const app = express();
+export const app = express();
 
 
 //Setting up cors

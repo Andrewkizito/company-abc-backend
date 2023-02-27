@@ -5,7 +5,7 @@
     /* Modules */
     "module": "commonjs",
     /* JavaScript Support */
-    "allowJs": false,
+    "allowJs": true,
     "outDir": "./dist",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
