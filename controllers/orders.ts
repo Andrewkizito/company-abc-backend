@@ -86,6 +86,9 @@ export function placeOrder(req: Request, res: Response, next: NextFunction) {
 				res.statusCode = 403;
 				res.send(err.message);
 			});
+	} else {
+		res.statusCode = 403;
+		res.send('Payload is invalid');
 	}
 }
 
@@ -205,7 +208,7 @@ export function approveOrder(req: Request, res: Response, next: NextFunction) {
 			});
 		} else {
 			res.statusCode = 403;
-			res.send('Name, Cart, Total price and sms endpoint are all required');
+			res.send('Payload is invalid');
 		}
 	} else {
 		res.statusCode = 403;
@@ -217,27 +220,33 @@ export function rejectOrder(req: Request, res: Response, next: NextFunction) {
 	if (req.body.isAuthenticated) {
 		const { _id, name, reason, cart, phoneNumber }: RejectOrderPayload =
       req.body;
-		// Updating order status to REJECTED
-		Order.findByIdAndUpdate(_id, {
-			$set: { orderStatus: 'REJECTED' },
-		})
-			.then(() => {
-				const newPayload = {
-					destination: phoneNumber,
-					onSuccess: 'Order has been rejected successfully',
-					message: generateOrderRejectionMessage(name, reason, cart),
-				};
-				req.body = newPayload;
-				next();
+		// Validate payload
+		if (_id && name && reason && cart && phoneNumber) {
+			// Updating order status to REJECTED
+			Order.findByIdAndUpdate(_id, {
+				$set: { orderStatus: 'REJECTED' },
 			})
-			.catch((err) => {
-				// Sending out of stock message
-				res.statusCode = 403;
-				res.send(err.message);
-			});
+				.then(() => {
+					const newPayload = {
+						destination: phoneNumber,
+						onSuccess: 'Order has been rejected successfully',
+						message: generateOrderRejectionMessage(name, reason, cart),
+					};
+					req.body = newPayload;
+					next();
+				})
+				.catch((err) => {
+					// Sending out of stock message
+					res.statusCode = 403;
+					res.send(err.message);
+				});
+		} else {
+			res.statusCode = 403;
+			res.send('Payload is invalid');
+		}
 	} else {
 		res.statusCode = 403;
-		res.send('Name, Cart, Total price and sms endpoint are all required');
+		res.send('Auth credentials invalid');
 	}
 }
 
@@ -254,7 +263,6 @@ export function completeOrder(req: Request, res: Response, next: NextFunction) {
 					next();
 				})
 				.catch((err) => {
-					// Sending out of stock message
 					res.statusCode = 403;
 					res.send(err.message);
 				});
@@ -264,6 +272,49 @@ export function completeOrder(req: Request, res: Response, next: NextFunction) {
 		}
 	} else {
 		res.statusCode = 403;
-		res.send('Name, Cart, Total price and sms endpoint are all required');
+		res.send('Auth credentials invalid');
+	}
+}
+
+export function deleteOrder(req: Request, res: Response, next: NextFunction) {
+	if (req.body.isAuthenticated) {
+		const { _id } = req.body;
+		if (_id) {
+			// Get order Status
+			Order.findById(_id)
+				.then((item) => {
+					if (item) {
+						if (['REJECTED', 'COMPLETED'].includes(item?.orderStatus)) {
+							// Deleting the order
+							Order.deleteOne()
+								.then(() => {
+									req.body = 'Order has been successfully deleted';
+									next();
+								})
+								.catch((err) => {
+									// Sending out of stock message
+									res.statusCode = 403;
+									res.send(err.message);
+								});
+						} else {
+							res.statusCode = 403;
+							res.send('Order must be is either rejected or completed status');
+						}
+					} else {
+						res.statusCode = 404;
+						res.send('Order not found, check id and try again');
+					}
+				})
+				.catch((err) => {
+					res.statusCode = 403;
+					res.send(err.message);
+				});
+		} else {
+			res.statusCode = 403;
+			res.send('Order id is required');
+		}
+	} else {
+		res.statusCode = 403;
+		res.send('Auth credentials invalid');
 	}
 }
