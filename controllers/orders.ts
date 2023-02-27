@@ -222,10 +222,9 @@ export function rejectOrder(req: Request, res: Response, next: NextFunction) {
 			$set: { orderStatus: 'REJECTED' },
 		})
 			.then(() => {
-				console.log('Order has been REJECTED');
 				const newPayload = {
 					destination: phoneNumber,
-					onSuccess: 'Order has been approved successfully',
+					onSuccess: 'Order has been rejected successfully',
 					message: generateOrderRejectionMessage(name, reason, cart),
 				};
 				req.body = newPayload;
