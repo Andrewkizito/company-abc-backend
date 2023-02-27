@@ -42,6 +42,32 @@ This API application exposes the following endpoints:
 ### Api Endpoints
 `/products`: This handles all the requests that involve creation, and updating of products that in mongodb database.
 
+#### Methods
+*GET* - This will return a list of all procts in the database
+
+*POST* - This will create A new product by passing in a payload inform of formData with the following fields accompanied with an Authorization header with the auth token.
+- productName: The name of the product
+- description: Short sumamry about product
+- image: Name of the image file to be used
+- uploadFile: Javascript file Object
+- rating: Rating of the product
+- stock: Total amount in stock
+- unit: Units used to measure the product
+
+*PATCH* - This will update the product by passing in a payload inform of json with the following fields:
+```json
+{
+    "_id": "id of the product",
+    "newStock": "new stock value(number)"
+}
+```
+accompanied with an Authorization header with the auth token.
+
 `/orders`: Handlers all order related actions such as placing an order, deleting an order, approving and order and also rejecting an order
 
 `/auth`: Deletes with authentication which includes login, registration and token validation.
+
+#### Methods
+*POST /auth/register* - This will create a new user by passing in a payload inform of json with `username and password`.
+*POST /auth/login* - This will generate an auth token for a user by passing in a payload inform of json with `username and password`
+*GET /auth/status* - This will validate an auth token which is found in the `Authoriozation header`
