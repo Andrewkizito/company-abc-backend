@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express';
 import {
 	approveOrder,
 	completeOrder,
+	deleteOrder,
 	getOrders,
 	placeOrder,
 	rejectOrder,
@@ -11,10 +12,12 @@ import { sendMessage } from '../controllers/messaging';
 
 const ordersRouter = Router();
 
+// Create new order
 ordersRouter.post('/', placeOrder, (req: Request, res: Response) => {
 	res.send(req.body).status(200);
 });
 
+// Get all orders
 ordersRouter.get(
 	'/',
 	checkAuthState,
@@ -24,6 +27,17 @@ ordersRouter.get(
 	}
 );
 
+// Delete an order
+ordersRouter.delete(
+	'/',
+	checkAuthState,
+	deleteOrder,
+	(req: Request, res: Response) => {
+		res.send(req.body).status(200);
+	}
+);
+
+// Approve an order
 ordersRouter.patch(
 	'/approve',
 	checkAuthState,
@@ -34,6 +48,7 @@ ordersRouter.patch(
 	}
 );
 
+// Reject an order
 ordersRouter.patch(
 	'/reject',
 	checkAuthState,
@@ -44,6 +59,7 @@ ordersRouter.patch(
 	}
 );
 
+// Complete order
 ordersRouter.patch(
 	'/complete',
 	checkAuthState,
