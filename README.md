@@ -36,6 +36,9 @@ Note: Always copy `/public` into `/build/public` since the ites our static folde
 #### `npm run eslint`
 Runs eslint to confirm if application code follows recommended specifications.
 
+#### `npm run test`
+Runs all tests present in the application `/tests` folder.
+
 API Endpoints
 This API application exposes the following endpoints:
 
@@ -58,7 +61,14 @@ This API application exposes the following endpoints:
 
 `/orders`: Handlers all order related actions such as placing an order, deleting an order, approving and order and also rejecting an order
 
-`/auth`: Deletes with authentication which includes login, registration and token validation.
+#### Methods
+*GET /orders*: Gets all orders from the database.
+*POST /orders*: Added a new order to the database.
+*PATCH /orders/reject*: Changes the order status to REJECTED given an id of the order
+*PATCH /orders/approve*: Approves an order given an id of the order and changes its status to APPROVED
+*PATCH /orders/approve*: Takes an id of the order and changes its status to COMPLETED
+
+`/auth`: Handles authentication which includes login, registration and token validation.
 
 #### Methods
 *POST /auth/register* - This will create a new user by passing in a payload inform of json with `username and password`.
