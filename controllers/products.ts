@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import ProductModel from '../models/Product';
 
 interface ProductPayload {
-  product_name: string;
+  productName: string;
   description: string;
   image: string;
   price: string;
@@ -35,14 +35,14 @@ export async function saveProduct(
 		if (Object.values(mydata).length) {
 			try {
 				const item = await ProductModel.find({
-					product_name: mydata.product_name,
+					productName: mydata.productName,
 				});
 				if (item.length) {
 					res.statusCode = 403;
 					res.send('Item Already Exists');
 				} else {
 					const newProduct = new ProductModel({
-						product_name: mydata.product_name,
+						productName: mydata.productName,
 						description: mydata.description,
 						image: mydata.image,
 						price: mydata.price,
