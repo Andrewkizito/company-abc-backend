@@ -54,14 +54,7 @@ This API application exposes the following endpoints:
 - stock: Total amount in stock
 - unit: Units used to measure the product
 
-*PATCH* - This will update the product by passing in a payload inform of json with the following fields:
-```json
-{
-    "_id": "id of the product",
-    "newStock": "new stock value(number)"
-}
-```
-accompanied with an Authorization header with the auth token.
+*PATCH* - This will update the product by passing in a payload inform of json with the following fields `_id: string, newStock: number` accompanied with an Authorization header with the auth token.
 
 `/orders`: Handlers all order related actions such as placing an order, deleting an order, approving and order and also rejecting an order
 
