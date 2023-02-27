@@ -69,7 +69,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 						data: payload.username,
 					},
 					process.env.APP_SECRET,
-					{ expiresIn: '1h' }
+					{ expiresIn: '2h' }
 				);
 				req.body = token;
 				next();
