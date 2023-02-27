@@ -51,7 +51,7 @@ describe('Products endpoint', () => {
 });
 
 describe('Orders endpoint', () => {
-	/* Connecting to the database before each test. */
+	/* Connecting to the database before each test. And generating authtoken*/
 	let authToken: string;
 	beforeEach(async () => {
 		await mongoose.connect(
