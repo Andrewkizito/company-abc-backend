@@ -5,8 +5,8 @@ export function sendMessage(req: Request, res: Response, next: NextFunction) {
 	AWS.config.update({
 		region: "eu-central-1",
 		credentials: {
-			accessKeyId: "AKIAUTHTJ64KYMZOMXOD",
-			secretAccessKey: "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",
+			accessKeyId: "******",
+			secretAccessKey: "********",
 		},
 	});
 
